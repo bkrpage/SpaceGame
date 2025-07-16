@@ -11,12 +11,15 @@ config_version=5
 [application]
 
 config/name="Project 1"
+run/main_scene="uid://cgn2wh3lce0y0"
 config/features=PackedStringArray("4.4", "C#", "Mobile")
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/resizable=false
 
 [dotnet]
 
 project/assembly_name="Project 1"
-
-[rendering]
-
-renderer/rendering_method="mobile"
