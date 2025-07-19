@@ -1,10 +1,14 @@
 [gd_scene load_steps=3 format=3 uid="uid://bq3uof2ni3be0"]
 
-[ext_resource type="Texture2D" uid="uid://dlnifn2frygxm" path="res://assets/graphic/playerShip1_orange.png" id="1_4flbx"]
 [ext_resource type="Script" uid="uid://56pbek5fbvrl" path="res://scenes/Player.cs" id="1_g2els"]
+[ext_resource type="Texture2D" uid="uid://dlnifn2frygxm" path="res://assets/graphic/playerShip1_orange.png" id="2_g2els"]
 
-[node name="Player" type="Node2D"]
+[node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_g2els")
+MaxSpeed = 500.0
 
 [node name="PlayerSprite" type="Sprite2D" parent="."]
-texture = ExtResource("1_4flbx")
+texture = ExtResource("2_g2els")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(-8, -37, 8, -37, 12, -12, 36, 2, 49, -7, 46, 25, 14, 28, 8, 38, -8, 38, -14, 27, -46, 24, -50, -7, -36, 2, -11, -12)
