@@ -1,9 +1,9 @@
 [gd_scene load_steps=7 format=3 uid="uid://cgn2wh3lce0y0"]
 
 [ext_resource type="PackedScene" uid="uid://bq3uof2ni3be0" path="res://scenes/player.tscn" id="1_2q6dc"]
+[ext_resource type="Script" uid="uid://bf1o78itfuyf8" path="res://scenes/Level.cs" id="1_ppgk2"]
 [ext_resource type="Texture2D" uid="uid://bt2mwxeu61h3e" path="res://assets/graphic/Backgrounds/darkPurple.png" id="1_w7c3h"]
 [ext_resource type="PackedScene" uid="uid://x4t0pwd4xp3" path="res://scenes/meteor.tscn" id="3_w8frs"]
-[ext_resource type="Script" uid="uid://dwh78tj0ygnu6" path="res://scenes/Timer.cs" id="4_mx8sn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_w8frs"]
 size = Vector2(1323, 52)
@@ -12,6 +12,7 @@ size = Vector2(1323, 52)
 size = Vector2(26, 848)
 
 [node name="Level" type="Node2D"]
+script = ExtResource("1_ppgk2")
 
 [node name="Background" type="Sprite2D" parent="."]
 position = Vector2(635.25, 365)
@@ -50,6 +51,5 @@ position = Vector2(1309, 360)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Borders/Right"]
 shape = SubResource("RectangleShape2D_mx8sn")
 
-[node name="Timer" type="Timer" parent="."]
+[node name="MeteorTimer" type="Timer" parent="."]
 autostart = true
-script = ExtResource("4_mx8sn")

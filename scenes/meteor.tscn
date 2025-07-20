@@ -9,8 +9,8 @@ radius = 42.0476
 [node name="Meteor" type="Area2D"]
 script = ExtResource("1_pxso2")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="MeteorSprite" type="Sprite2D" parent="."]
 texture = ExtResource("1_tcwo0")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="MeteorCollision" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_tcwo0")
