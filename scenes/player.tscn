@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://dlnifn2frygxm" path="res://assets/graphic/playerShip1_orange.png" id="2_g2els"]
 
 [node name="Player" type="CharacterBody2D"]
+collision_mask = 6
 script = ExtResource("1_g2els")
 MaxSpeed = 500.0
 
@@ -12,3 +13,6 @@ texture = ExtResource("2_g2els")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(-8, -37, 8, -37, 12, -12, 36, 2, 49, -7, 46, 25, 14, 28, 8, 38, -8, 38, -14, 27, -46, 24, -50, -7, -36, 2, -11, -12)
+
+[node name="LaserStartPosition" type="Marker2D" parent="."]
+position = Vector2(0, -56)

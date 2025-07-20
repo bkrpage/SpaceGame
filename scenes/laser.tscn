@@ -1,11 +1,15 @@
-[gd_scene load_steps=3 format=3 uid="uid://l5hbi7w8bidd"]
+[gd_scene load_steps=4 format=3 uid="uid://l5hbi7w8bidd"]
 
+[ext_resource type="Script" uid="uid://cai3vi5dutbb4" path="res://scenes/Laser.cs" id="1_a7dhc"]
 [ext_resource type="Texture2D" uid="uid://c7iwhwugprfro" path="res://assets/graphic/Lasers/laserRed01.png" id="1_xmihv"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_xmihv"]
 radius = 4.0
 
 [node name="Laser" type="Area2D"]
+collision_layer = 8
+collision_mask = 2
+script = ExtResource("1_a7dhc")
 
 [node name="LaserSprite" type="Sprite2D" parent="."]
 texture = ExtResource("1_xmihv")

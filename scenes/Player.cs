@@ -20,30 +20,75 @@ public partial class Player : CharacterBody2D
 	[Export] public StringName RightInput = "right";
 	[Export] public StringName ForwardInput = "forward";
 	[Export] public StringName BackwardInput = "backward";
+	[Export] public StringName ShootInput = "shoot";
 	
 	[Export] public Texture2D PlayerTexture = GD.Load<Texture2D>("res://assets/graphic/playerShip1_orange.png");
 	
 
+	// Positioning and rotation
 	private Vector2 _velocity = Vector2.Zero;
-	private Sprite2D _sprite;
-	
 	private float _targetSkew;
-
 	private Vector2 _direction;
+	
+	// Nodes
+	private Sprite2D _sprite;
+	private Marker2D _laserStartPosition;
+
+	[Signal]
+	public delegate void ShootLaserEventHandler(Vector2 position);
+	
 	
 	public override void _Ready()
 	{
-		_sprite = GetNode<Sprite2D>("PlayerSprite");
+		_getNodes();
+		
 		_sprite.Texture = PlayerTexture;
+	}
+
+	private void _getNodes()
+	{
+		_sprite = GetNode<Sprite2D>("PlayerSprite");
+		_laserStartPosition = GetNode<Marker2D>("LaserStartPosition");
 	}
 
 	public override void _Process(double delta)
 	{
 		var deltaf = (float)delta;
 		
+		_handleInput();
+		
+		_calculateRotationAndSkew(deltaf);
+		_skew(deltaf);
+		_squash();
+		
+		_move(deltaf);
+	}
+
+	private void _handleInput()
+	{
 		_direction = Input.GetVector(LeftInput, RightInput, ForwardInput, BackwardInput);
+		
+		// Input.isActionPressed for continuous shooting - maybe for another special type of laser.
+		if (Input.IsActionJustPressed("shoot"))
+		{
+			EmitSignal(SignalName.ShootLaser, _laserStartPosition.GlobalPosition);
+		}
+	}
 
+	private void _move(float deltaf)
+	{
+		Velocity = 
+			_direction != Vector2.Zero ? 
+				Velocity.MoveToward(_direction * MaxSpeed, AccelerationFactor * deltaf) :
+				Velocity.MoveToward(Vector2.Zero, DecelerationFactor * Friction * deltaf);
+		
+		
+		// Position += _velocity * deltaf;
+		MoveAndSlide();
+	}
 
+	private void _calculateRotationAndSkew(float deltaf)
+	{
 		// going right
 		if (_direction.X < 0)
 		{
@@ -65,25 +110,8 @@ public partial class Player : CharacterBody2D
 		
 		// Clamp the rotation so it doesn't exceed the max in either direction
 		Rotation = Mathf.Clamp(Rotation, -MaxRotation, MaxRotation);
-		
-		_skew(deltaf);
-		_squash();
-		
-		_move(deltaf);
 	}
-
-	private void _move(float deltaf)
-	{
-		Velocity = 
-			_direction != Vector2.Zero ? 
-				Velocity.MoveToward(_direction * MaxSpeed, AccelerationFactor * deltaf) :
-				Velocity.MoveToward(Vector2.Zero, DecelerationFactor * Friction * deltaf);
-		
-		
-		// Position += _velocity * deltaf;
-		MoveAndSlide();
-	}
-
+	
 	private void _squash()
 	{
 		// Squash sprite as well on horizontal axis

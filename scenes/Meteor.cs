@@ -34,24 +34,9 @@ public partial class Meteor : Area2D
 	{
 		
 		//Set sprite
-		_meteorColor = TextureColors[_rng.RandiRange(0, TextureColors.Length - 1)];
-		_meteorShape = _rng.RandiRange(1, TextureShapeVariationAmount);
+		_setupSpriteAndCollisions();
 		
-		_textureName = TextureNameTemplate
-			.Replace("{meteorColor}", _meteorColor)
-			.Replace("{meteorShape}", _meteorShape.ToString());
-
-		var sprite = GetNode<Sprite2D>("MeteorSprite");
-		sprite.Texture = GD.Load<Texture2D>(TextureResourcePath + _textureName);
 		//Set collision shape to match sprite
-		
-		for (var i = 1; i < TextureShapeVariationAmount; i++)
-		{
-			var meteorCollisionName = $"MeteorCollision{i}";
-			GD.Print(meteorCollisionName);
-			var collisionShape = GetNode<CollisionPolygon2D>(meteorCollisionName);
-			collisionShape.Disabled = i != _meteorShape;
-		}
 		
 		// Get Window dimensions - We could probably get this from elsewhere instead of gettign this every time.
 		_windowWidth = (int) GetViewport().GetVisibleRect().Size[0];
@@ -74,13 +59,34 @@ public partial class Meteor : Area2D
 		BodyEntered += _OnBodyEntered;
 		
 		// Print everything for debug
-		GD.Print(_windowWidth, "*", _windowHeight);
-		GD.Print("Texture name: ", _textureName);
-		GD.Print("Initial Position: ", Position);
-		GD.Print("Speed: ", (_speed));
-		GD.Print("Y Variation: ", (_yVariation));
-		GD.Print("Rotation Speed: ", (_rotationSpeedDeg));
+		// GD.Print(_windowWidth, "*", _windowHeight);
+		// GD.Print("Texture name: ", _textureName);
+		// GD.Print("Initial Position: ", Position);
+		// GD.Print("Speed: ", (_speed));
+		// GD.Print("Y Variation: ", (_yVariation));
+		// GD.Print("Rotation Speed: ", (_rotationSpeedDeg));
 
+	}
+
+	private void _setupSpriteAndCollisions()
+	{
+		_meteorColor = TextureColors[_rng.RandiRange(0, TextureColors.Length - 1)];
+		_meteorShape = _rng.RandiRange(1, TextureShapeVariationAmount);
+		
+		_textureName = TextureNameTemplate
+			.Replace("{meteorColor}", _meteorColor)
+			.Replace("{meteorShape}", _meteorShape.ToString());
+
+		var sprite = GetNode<Sprite2D>("MeteorSprite");
+		sprite.Texture = GD.Load<Texture2D>(TextureResourcePath + _textureName);
+		
+		//Now enable corresponding collision
+		for (var i = 1; i <= TextureShapeVariationAmount; i++)
+		{
+			var meteorCollisionName = $"MeteorCollision{i}";
+			var collisionShape = GetNode<CollisionPolygon2D>(meteorCollisionName);
+			collisionShape.Disabled = i != _meteorShape;
+		}
 	}
 
 	public override void _Process(double delta)
