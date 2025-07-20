@@ -1,18 +1,18 @@
 using Godot;
 using System;
 
-public partial class Meteor : Area2D
+public partial class Timer : Godot.Timer
 {
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		
 		// Setup event/signal handling.
-		BodyEntered += _OnBodyEntered;
-
+		Timeout += _OnTimeout;
 	}
-
-	private static void _OnBodyEntered(Node2D body)
+	
+	private static void _OnTimeout()
 	{
-		GD.Print("entered " + body);
+		GD.Print("Timer Timeout");
 	}
 }
