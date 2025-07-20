@@ -1,16 +1,30 @@
-[gd_scene load_steps=4 format=3 uid="uid://x4t0pwd4xp3"]
+[gd_scene load_steps=3 format=3 uid="uid://x4t0pwd4xp3"]
 
 [ext_resource type="Script" uid="uid://c0qj0oaot23va" path="res://scenes/Meteor.cs" id="1_pxso2"]
-[ext_resource type="Texture2D" uid="uid://bm7g5gb5on5pc" path="res://assets/graphic/Meteors/meteorGrey_big1.png" id="1_tcwo0"]
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_tcwo0"]
-radius = 42.0476
+[ext_resource type="Texture2D" uid="uid://dpgeebgqkwbuv" path="res://assets/graphic/Meteors/meteorBrown_big4.png" id="2_pxso2"]
 
 [node name="Meteor" type="Area2D"]
 script = ExtResource("1_pxso2")
 
 [node name="MeteorSprite" type="Sprite2D" parent="."]
-texture = ExtResource("1_tcwo0")
+texture = ExtResource("2_pxso2")
 
-[node name="MeteorCollision" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_tcwo0")
+[node name="MeteorCollision1" type="CollisionPolygon2D" parent="."]
+build_mode = 1
+polygon = PackedVector2Array(23, -42, 51, -1, 34, 33, 10, 30, -22, 42, -51, 10, -34, -42)
+disabled = true
+
+[node name="MeteorCollision2" type="CollisionPolygon2D" parent="."]
+build_mode = 1
+polygon = PackedVector2Array(-39, -41, 7, -48, 60, -29, 46, 18, -9, 33, -26, 48, -54, 27, -60, -5)
+disabled = true
+
+[node name="MeteorCollision3" type="CollisionPolygon2D" parent="."]
+build_mode = 1
+polygon = PackedVector2Array(29, -28, 44, 1, 21, 41, -27, 34, -42, 15, -44, -19, -10, -40)
+disabled = true
+
+[node name="MeteorCollision4" type="CollisionPolygon2D" parent="."]
+build_mode = 1
+polygon = PackedVector2Array(17, -47, 49, -12, 30, 42, -20, 47, -49, 10, -35, -34)
+disabled = true
