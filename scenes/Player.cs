@@ -23,32 +23,31 @@ public partial class Player : CharacterBody2D
 	[Export] public StringName ShootInput = "shoot";
 	
 	[Export] public Texture2D PlayerTexture = GD.Load<Texture2D>("res://assets/graphic/playerShip1_orange.png");
+
+	public bool CanShoot = true;
 	
 
 	// Positioning and rotation
-	private Vector2 _velocity = Vector2.Zero;
 	private float _targetSkew;
 	private Vector2 _direction;
 	
 	// Nodes
-	private Sprite2D _sprite;
-	private Marker2D _laserStartPosition;
+	private Sprite2D _playerSpriteNode;
+	private Marker2D _laserStartPositionNode;
+	
+	private Timer _primaryWeaponTimerNode;
 
 	[Signal]
-	public delegate void ShootLaserEventHandler(Vector2 position);
+	public delegate void ShootLaserEventHandler(Vector2 position, Vector2 originatingVelocity);
 	
 	
 	public override void _Ready()
 	{
 		_getNodes();
 		
-		_sprite.Texture = PlayerTexture;
-	}
-
-	private void _getNodes()
-	{
-		_sprite = GetNode<Sprite2D>("PlayerSprite");
-		_laserStartPosition = GetNode<Marker2D>("LaserStartPosition");
+		_registerPrimaryWeaponTimer();
+		
+		_playerSpriteNode.Texture = PlayerTexture;
 	}
 
 	public override void _Process(double delta)
@@ -64,14 +63,33 @@ public partial class Player : CharacterBody2D
 		_move(deltaf);
 	}
 
+	private void _getNodes()
+	{
+		_playerSpriteNode = GetNode<Sprite2D>("PlayerSprite");
+		_laserStartPositionNode = GetNode<Marker2D>("LaserStartPosition");
+		_primaryWeaponTimerNode = GetNode<Timer>("PrimaryWeaponTimer");
+	}
+	
+	private void _registerPrimaryWeaponTimer()
+	{
+		_primaryWeaponTimerNode.Timeout += _onPrimaryWeaponTimerTimeout;	
+	}
+
+	private void _onPrimaryWeaponTimerTimeout()
+	{
+		CanShoot = true;
+	}
+
 	private void _handleInput()
 	{
 		_direction = Input.GetVector(LeftInput, RightInput, ForwardInput, BackwardInput);
 		
 		// Input.isActionPressed for continuous shooting - maybe for another special type of laser.
-		if (Input.IsActionJustPressed("shoot"))
+		if (Input.IsActionJustPressed("shoot") && CanShoot)
 		{
-			EmitSignal(SignalName.ShootLaser, _laserStartPosition.GlobalPosition);
+			CanShoot = false;
+			EmitSignal(SignalName.ShootLaser, _laserStartPositionNode.GlobalPosition, Velocity);
+			_primaryWeaponTimerNode.Start();
 		}
 	}
 
@@ -116,13 +134,13 @@ public partial class Player : CharacterBody2D
 	{
 		// Squash sprite as well on horizontal axis
 		var squash = 1f - Mathf.Abs(_targetSkew) * 0.2f;
-		_sprite.Scale = new Vector2(squash, 1f);
+		_playerSpriteNode.Scale = new Vector2(squash, 1f);
 	}
 
 	private void _skew(float deltaf)
 	{
 		// Current transform
-		var xform = _sprite.Transform;
+		var xform = _playerSpriteNode.Transform;
 		
 		// Extract basis vectors
 		var x = xform.X;
@@ -133,6 +151,6 @@ public partial class Player : CharacterBody2D
 		
 		// Reassign modified transform
 		xform.X = x;
-		_sprite.Transform = xform;
+		_playerSpriteNode.Transform = xform;
 	}
 }

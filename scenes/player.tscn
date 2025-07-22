@@ -15,4 +15,8 @@ texture = ExtResource("2_g2els")
 polygon = PackedVector2Array(-8, -37, 8, -37, 12, -12, 36, 2, 49, -7, 46, 25, 14, 28, 8, 38, -8, 38, -14, 27, -46, 24, -50, -7, -36, 2, -11, -12)
 
 [node name="LaserStartPosition" type="Marker2D" parent="."]
-position = Vector2(0, -56)
+position = Vector2(0, -60)
+
+[node name="PrimaryWeaponTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true

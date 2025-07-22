@@ -1,0 +1,51 @@
+[gd_scene load_steps=7 format=3 uid="uid://c71b2gam0dc8b"]
+
+[ext_resource type="Texture2D" uid="uid://dly5ut56d3et8" path="res://assets/graphic/Effects/S001_nyknck.png" id="1_mcqwg"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ppgk2"]
+atlas = ExtResource("1_mcqwg")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2r41h"]
+atlas = ExtResource("1_mcqwg")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_klq6b"]
+atlas = ExtResource("1_mcqwg")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b121j"]
+atlas = ExtResource("1_mcqwg")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_j6vao"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ppgk2")
+}, {
+"duration": 2.0,
+"texture": SubResource("AtlasTexture_2r41h")
+}, {
+"duration": 2.0,
+"texture": SubResource("AtlasTexture_klq6b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b121j")
+}, {
+"duration": 2.0,
+"texture": SubResource("AtlasTexture_klq6b")
+}, {
+"duration": 2.0,
+"texture": SubResource("AtlasTexture_2r41h")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Star" type="Node2D"]
+
+[node name="StarAnimatedSprite" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_j6vao")
+autoplay = "default"
