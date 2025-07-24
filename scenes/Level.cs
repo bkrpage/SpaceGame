@@ -7,6 +7,8 @@ public partial class Level : Node2D
 	[Export] public double MeteorTimerTimout = 1.0;
 	[Export] public int StarsAmount = 35;
 	
+	[Export] public PackedScene GameOverScene = GD.Load<PackedScene>("res://scenes/game_over.tscn");
+	
 	// Scenes
 	private PackedScene _meteorScene = GD.Load<PackedScene>("res://scenes/meteor.tscn");
 	private PackedScene _laserScene = GD.Load<PackedScene>("res://scenes/laser.tscn");
@@ -14,10 +16,13 @@ public partial class Level : Node2D
 	
 	// Instance variables
 	private RandomNumberGenerator _rng = new();
-
 	private Vector2 _screenSize;
+
+	// TODO I don't like this here, I feel like it should be in the player itself
+	private int _playerHealth = 5;
 	
 	// Nodes
+	private Global _globalNode;
 	private Player _playerNode;
 	private Node2D _lasersNode;
 	private Node2D _meteorsNode;
@@ -27,13 +32,15 @@ public partial class Level : Node2D
 	public override void _Ready()
 	{
 		_screenSize = GetViewport().GetVisibleRect().Size;
-		
+
 		_getNodes();
-		
+
 		_registerMeteorTimer();
 		_registerShootLaser();
 
 		_randomiseStars();
+		_setHealthUi();
+		_setScoreToZero();
 	}
 
 
@@ -42,6 +49,7 @@ public partial class Level : Node2D
 	/// </summary>
 	private void _getNodes()
 	{
+		_globalNode = GetNode<Global>("/root/Global");
 		_meteorsNode = GetNode<Node2D>("Meteors");
 		_playerNode = GetNode<Player>("Player");
 		_meteorsNode = GetNode<Node2D>("Meteors");
@@ -72,10 +80,26 @@ public partial class Level : Node2D
 
 	private void _onMeteorTimerTimeout()
 	{
-		var meteor = _meteorScene.Instantiate() as Meteor;
+		if (_meteorScene.Instantiate() is not Meteor meteor)
+		{
+			return;
+		}
 		// If we want to make a series of 'special' meteors, we can do that using the below:
 		// meteor.BaseSpeed = 5000f;
 		_meteorsNode.AddChild(meteor);
+
+		meteor.Connect("Collision", new Callable(this, nameof(_onMeteorCollision)));
+	}
+
+	private void _onMeteorCollision()
+	{
+		_playerHealth--;
+		GetTree().CallGroup("ui", "SetHealth", _playerHealth);
+		if (_playerHealth <= 0)
+		{
+			GetTree().ChangeSceneToPacked(GameOverScene);
+		}
+
 	}
 
 	private void _randomiseStars()
@@ -97,7 +121,15 @@ public partial class Level : Node2D
 			
 			_starsNode.AddChild(star);
 		}
-		
-		
+	}
+	
+	private void _setHealthUi()
+	{
+		GetTree().CallGroup("ui", "SetHealth", _playerHealth);
+	}
+	
+	private void _setScoreToZero()
+	{
+		_globalNode.Score = 0;
 	}
 }

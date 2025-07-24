@@ -1,0 +1,60 @@
+using Godot;
+using System;
+
+public partial class Ui : CanvasLayer
+{
+
+	[Export] public Texture2D LifeTexture = GD.Load<Texture2D>("res://assets/graphic/UI/playerLife1_orange.png");
+
+	[Export] public double ScoreTimerTimeout = 0.5;
+	
+	private Global _globalNode;
+	private HBoxContainer _livesContainerNode;
+	private Timer _scoreTimerNode;
+	private Label _scoreLabelNode;
+	
+	
+	public override void _Ready()
+	{
+		_getNodes();
+		_registerScoreTimer();
+	}
+
+	private void _getNodes()
+	{
+		_globalNode = GetNode<Global>("/root/Global");
+		_scoreTimerNode =  GetNode<Timer>("ScoreTimer");
+		_livesContainerNode =  GetNode<HBoxContainer>("LivesOuterContainer/LivesContainer");
+		_scoreLabelNode =  GetNode<Label>("MarginContainer/Label");
+	}
+	
+	private void _registerScoreTimer()
+	{
+		_scoreTimerNode.WaitTime = ScoreTimerTimeout;
+		_scoreTimerNode.Start();
+		_scoreTimerNode.Timeout += _onScoreTimerTimeout;	
+	}
+
+	private void _onScoreTimerTimeout()
+	{
+		_globalNode.Score++;
+		_scoreLabelNode.Text = $"Score: {_globalNode.Score}";
+	}
+	
+
+	private void SetHealth(int amount){
+		foreach (var life in _livesContainerNode.GetChildren())
+		{
+			life.QueueFree();
+		}
+
+		for (int i = 0; i < amount; i++)
+		{
+			var life = new  TextureRect();
+			life.Texture = LifeTexture;
+			life.StretchMode = TextureRect.StretchModeEnum.Keep;
+			_livesContainerNode.AddChild(life);
+			
+		}
+	}
+}

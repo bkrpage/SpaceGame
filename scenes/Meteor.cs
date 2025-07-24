@@ -29,14 +29,16 @@ public partial class Meteor : Area2D
 
 	private int _windowWidth;
 	private int _windowHeight;
+	
+	
+	[Signal]
+	public delegate void CollisionEventHandler();
 
 	public override void _Ready()
 	{
 		
 		//Set sprite
 		_setupSpriteAndCollisions();
-		
-		//Set collision shape to match sprite
 		
 		// Get Window dimensions - We could probably get this from elsewhere instead of gettign this every time.
 		_windowWidth = (int) GetViewport().GetVisibleRect().Size[0];
@@ -57,15 +59,7 @@ public partial class Meteor : Area2D
 		
 		// Setup event/signal handling.
 		BodyEntered += _OnBodyEntered;
-		
-		// Print everything for debug
-		// GD.Print(_windowWidth, "*", _windowHeight);
-		// GD.Print("Texture name: ", _textureName);
-		// GD.Print("Initial Position: ", Position);
-		// GD.Print("Speed: ", (_speed));
-		// GD.Print("Y Variation: ", (_yVariation));
-		// GD.Print("Rotation Speed: ", (_rotationSpeedDeg));
-
+		AreaEntered += _OnAreaEntered;
 	}
 
 	private void _setupSpriteAndCollisions()
@@ -101,15 +95,23 @@ public partial class Meteor : Area2D
 		// Yeet when offscreen.
 		if (Position.Y > _windowWidth + 200f)
 		{
-			GD.Print("Off Screen");
 			QueueFree();
 		}
 		
 	}
 
-	private static void _OnBodyEntered(Node2D body)
+	// Player is a Body, so this is called.
+	private void _OnBodyEntered(Node2D body)
 	{
-		GD.Print(body);
-		
+		EmitSignal(SignalName.Collision);
+	}
+
+	// Laser is an Area, so this is called.
+	private void _OnAreaEntered(Node2D body)
+	{
+		// Get rid of laser that destroyed it
+		body.QueueFree();
+		// and yeet self.
+		QueueFree();
 	}
 }

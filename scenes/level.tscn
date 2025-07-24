@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://cgn2wh3lce0y0"]
+[gd_scene load_steps=7 format=3 uid="uid://cgn2wh3lce0y0"]
 
 [ext_resource type="PackedScene" uid="uid://bq3uof2ni3be0" path="res://scenes/player.tscn" id="1_2q6dc"]
 [ext_resource type="Script" uid="uid://bf1o78itfuyf8" path="res://scenes/Level.cs" id="1_ppgk2"]
 [ext_resource type="Texture2D" uid="uid://bt2mwxeu61h3e" path="res://assets/graphic/Backgrounds/darkPurple.png" id="1_w7c3h"]
+[ext_resource type="PackedScene" uid="uid://bg3phqgjno65g" path="res://scenes/ui.tscn" id="4_mx8sn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_w8frs"]
 size = Vector2(1323, 52)
@@ -18,19 +19,22 @@ MeteorTimerTimout = 0.4
 position = Vector2(635.25, 365)
 scale = Vector2(5.14648, 2.88281)
 texture = ExtResource("1_w7c3h")
+metadata/_edit_lock_ = true
 
 [node name="Stars" type="Node2D" parent="."]
+metadata/_edit_lock_ = true
 
 [node name="Player" parent="." instance=ExtResource("1_2q6dc")]
-position = Vector2(405, 197)
+position = Vector2(506, 161)
 
 [node name="Borders" type="Node2D" parent="."]
+metadata/_edit_lock_ = true
 
 [node name="Top" type="StaticBody2D" parent="Borders"]
 collision_layer = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Borders/Top"]
-position = Vector2(636.5, -42)
+position = Vector2(635, -40)
 shape = SubResource("RectangleShape2D_w8frs")
 
 [node name="Bottom" type="StaticBody2D" parent="Borders"]
@@ -57,5 +61,9 @@ shape = SubResource("RectangleShape2D_mx8sn")
 [node name="MeteorTimer" type="Timer" parent="."]
 
 [node name="Meteors" type="Node2D" parent="."]
+metadata/_edit_lock_ = true
 
 [node name="Lasers" type="Node2D" parent="."]
+metadata/_edit_lock_ = true
+
+[node name="UI" parent="." instance=ExtResource("4_mx8sn")]
