@@ -27,25 +27,25 @@ public partial class Meteor : Area2D
 	private float _yVariation;
 	private float _rotationSpeedDeg;
 
-	private int _windowWidth;
-	private int _windowHeight;
-	
+	private Vector2 _windowSize;
+
 	
 	[Signal]
 	public delegate void CollisionEventHandler();
+	[Signal]
+	public delegate void DestroyedEventHandler();
 
 	public override void _Ready()
 	{
-		
+		_getNodes();
 		//Set sprite
 		_setupSpriteAndCollisions();
 		
 		// Get Window dimensions - We could probably get this from elsewhere instead of gettign this every time.
-		_windowWidth = (int) GetViewport().GetVisibleRect().Size[0];
-		_windowHeight = (int) GetViewport().GetVisibleRect().Size[1];
+		_windowSize = GetViewport().GetVisibleRect().Size;
 		
 		// Place in initial Position;
-		var initialPositionX = _rng.RandiRange(0, _windowWidth);
+		var initialPositionX = _rng.RandiRange(0, (int) _windowSize.X);
 		var initialPositionY = _rng.RandiRange(-150, -50);
 		Position = new Vector2(initialPositionX, initialPositionY);
 		
@@ -60,6 +60,10 @@ public partial class Meteor : Area2D
 		// Setup event/signal handling.
 		BodyEntered += _OnBodyEntered;
 		AreaEntered += _OnAreaEntered;
+	}
+
+	private void _getNodes()
+	{
 	}
 
 	private void _setupSpriteAndCollisions()
@@ -93,7 +97,7 @@ public partial class Meteor : Area2D
 		
 
 		// Yeet when offscreen.
-		if (Position.Y > _windowWidth + 200f)
+		if (Position.Y > _windowSize.Y + 200f)
 		{
 			QueueFree();
 		}
@@ -109,6 +113,9 @@ public partial class Meteor : Area2D
 	// Laser is an Area, so this is called.
 	private void _OnAreaEntered(Node2D body)
 	{
+		// emit destroyed signal
+		EmitSignal(SignalName.Destroyed);
+		
 		// Get rid of laser that destroyed it
 		body.QueueFree();
 		// and yeet self.

@@ -34,6 +34,7 @@ public partial class Player : CharacterBody2D
 	// Nodes
 	private Sprite2D _playerSpriteNode;
 	private Marker2D _laserStartPositionNode;
+	private AudioStreamPlayer2D _laserStreamPlayerNode;
 	
 	private Timer _primaryWeaponTimerNode;
 
@@ -67,6 +68,7 @@ public partial class Player : CharacterBody2D
 	{
 		_playerSpriteNode = GetNode<Sprite2D>("PlayerSprite");
 		_laserStartPositionNode = GetNode<Marker2D>("LaserStartPosition");
+		_laserStreamPlayerNode = GetNode<AudioStreamPlayer2D>("LaserSound");
 		_primaryWeaponTimerNode = GetNode<Timer>("PrimaryWeaponTimer");
 	}
 	
@@ -90,6 +92,7 @@ public partial class Player : CharacterBody2D
 			CanShoot = false;
 			EmitSignal(SignalName.ShootLaser, _laserStartPositionNode.GlobalPosition, Velocity);
 			_primaryWeaponTimerNode.Start();
+			_laserStreamPlayerNode.Play();
 		}
 	}
 

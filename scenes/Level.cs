@@ -28,6 +28,8 @@ public partial class Level : Node2D
 	private Node2D _meteorsNode;
 	private Timer _meteorTimerNode;
 	private Node2D _starsNode;
+	private AudioStreamPlayer2D _explosionStreamPlayerNode;
+	private AudioStreamPlayer2D _damageStreamPlayerNode;
 
 	public override void _Ready()
 	{
@@ -52,10 +54,11 @@ public partial class Level : Node2D
 		_globalNode = GetNode<Global>("/root/Global");
 		_meteorsNode = GetNode<Node2D>("Meteors");
 		_playerNode = GetNode<Player>("Player");
-		_meteorsNode = GetNode<Node2D>("Meteors");
 		_meteorTimerNode =  GetNode<Timer>("MeteorTimer");
 		_lasersNode =  GetNode<Node2D>("Lasers");
 		_starsNode =  GetNode<Node2D>("Stars");
+		_explosionStreamPlayerNode = GetNode<AudioStreamPlayer2D>("ExplosionSound");
+		_damageStreamPlayerNode = GetNode<AudioStreamPlayer2D>("DamageSound");
 	}
 
 	private void _registerShootLaser()
@@ -89,10 +92,12 @@ public partial class Level : Node2D
 		_meteorsNode.AddChild(meteor);
 
 		meteor.Connect("Collision", new Callable(this, nameof(_onMeteorCollision)));
+		meteor.Connect("Destroyed", new Callable(this, nameof(_onMeteorDestroyed)));
 	}
 
 	private void _onMeteorCollision()
 	{
+		_damageStreamPlayerNode.Play();
 		_playerHealth--;
 		GetTree().CallGroup("ui", "SetHealth", _playerHealth);
 		if (_playerHealth <= 0)
@@ -100,6 +105,11 @@ public partial class Level : Node2D
 			GetTree().ChangeSceneToPacked(GameOverScene);
 		}
 
+	}
+
+	private void _onMeteorDestroyed()
+	{
+		_explosionStreamPlayerNode.Play();
 	}
 
 	private void _randomiseStars()

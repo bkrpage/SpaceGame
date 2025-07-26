@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bq3uof2ni3be0"]
+[gd_scene load_steps=4 format=3 uid="uid://bq3uof2ni3be0"]
 
 [ext_resource type="Script" uid="uid://56pbek5fbvrl" path="res://scenes/Player.cs" id="1_g2els"]
 [ext_resource type="Texture2D" uid="uid://dlnifn2frygxm" path="res://assets/graphic/playerShip1_orange.png" id="2_g2els"]
+[ext_resource type="AudioStream" uid="uid://b37pl1bjnfl3q" path="res://assets/audio/sfx_laser1.ogg" id="3_qhqgy"]
 
 [node name="Player" type="CharacterBody2D"]
 collision_mask = 6
@@ -20,3 +21,6 @@ position = Vector2(0, -60)
 [node name="PrimaryWeaponTimer" type="Timer" parent="."]
 wait_time = 0.5
 one_shot = true
+
+[node name="LaserSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_qhqgy")
