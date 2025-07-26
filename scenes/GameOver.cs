@@ -8,10 +8,13 @@ public partial class GameOver : CanvasLayer
 
 	private Global _globalNode;
 	private Label _scoreNode;
+	
+	private AudioStreamPlayer2D _deathSoundStreamPlayerNode;
 
 	public override void _Ready()
 	{
 		_getNodes();
+		_playDeathSound();
 		
 		_scoreNode.Text += $" {_globalNode.Score}";
 	}
@@ -24,6 +27,7 @@ public partial class GameOver : CanvasLayer
 	{
 		_globalNode = GetNode<Global>("/root/Global");
 		_scoreNode =  GetNode<Label>("LargeContainer/GameOverScoreContainer/Score");
+		_deathSoundStreamPlayerNode = GetNode<AudioStreamPlayer2D>("DeathSound");
 	}
 	private void _handleInput()
 	{
@@ -31,5 +35,9 @@ public partial class GameOver : CanvasLayer
 		{
 			GetTree().ChangeSceneToPacked(LevelScene);
 		}
+	}
+	private void _playDeathSound()
+	{
+		_deathSoundStreamPlayerNode.Play();
 	}
 }

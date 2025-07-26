@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://cd8qvjpp1lviv"]
+[gd_scene load_steps=5 format=3 uid="uid://cd8qvjpp1lviv"]
 
 [ext_resource type="Script" uid="uid://cncktcsnlgshq" path="res://scenes/GameOver.cs" id="1_wqhvx"]
 [ext_resource type="FontFile" uid="uid://t5ksy80w2krk" path="res://assets/fonts/Audiowide-Regular.ttf" id="1_xeevv"]
+[ext_resource type="AudioStream" uid="uid://sd1e00453yud" path="res://assets/audio/sfx_lose.ogg" id="3_racf3"]
+[ext_resource type="AudioStream" uid="uid://qq331n4np83f" path="res://assets/audio/menu.wav" id="4_7m3ot"]
 
 [node name="GameOver" type="CanvasLayer"]
 script = ExtResource("1_wqhvx")
@@ -55,3 +57,10 @@ layout_mode = 2
 theme_override_fonts/font = ExtResource("1_xeevv")
 theme_override_font_sizes/font_size = 18
 text = "Press [Space] to start again"
+
+[node name="DeathSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_racf3")
+
+[node name="GameOverMusic" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_7m3ot")
+autoplay = true

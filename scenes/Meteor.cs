@@ -115,6 +115,7 @@ public partial class Meteor : Area2D
 	{
 		// emit destroyed signal
 		EmitSignal(SignalName.Destroyed);
+		// Could instead play the sound from here, hide node and collision, and then await for x seconds for soudn to play.
 		
 		// Get rid of laser that destroyed it
 		body.QueueFree();

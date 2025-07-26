@@ -98,6 +98,8 @@ public partial class Level : Node2D
 	private void _onMeteorCollision()
 	{
 		_damageStreamPlayerNode.Play();
+		// Or could instead do:
+		// _playerNode.PlayCollisionSound();
 		_playerHealth--;
 		GetTree().CallGroup("ui", "SetHealth", _playerHealth);
 		if (_playerHealth <= 0)
@@ -142,4 +144,5 @@ public partial class Level : Node2D
 	{
 		_globalNode.Score = 0;
 	}
+	
 }
