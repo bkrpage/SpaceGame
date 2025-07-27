@@ -29,7 +29,6 @@ public partial class Level : Node2D
 	private Timer _meteorTimerNode;
 	private Node2D _starsNode;
 	private AudioStreamPlayer2D _explosionStreamPlayerNode;
-	private AudioStreamPlayer2D _damageStreamPlayerNode;
 
 	public override void _Ready()
 	{
@@ -58,7 +57,6 @@ public partial class Level : Node2D
 		_lasersNode =  GetNode<Node2D>("Lasers");
 		_starsNode =  GetNode<Node2D>("Stars");
 		_explosionStreamPlayerNode = GetNode<AudioStreamPlayer2D>("ExplosionSound");
-		_damageStreamPlayerNode = GetNode<AudioStreamPlayer2D>("DamageSound");
 	}
 
 	private void _registerShootLaser()
@@ -97,19 +95,25 @@ public partial class Level : Node2D
 
 	private void _onMeteorCollision()
 	{
-		_damageStreamPlayerNode.Play();
-		// Or could instead do:
-		// _playerNode.PlayCollisionSound();
-		_playerHealth--;
-		GetTree().CallGroup("ui", "SetHealth", _playerHealth);
-		if (_playerHealth <= 0)
+		_playerNode.PlayDamageSound();
+		_playerNode.Health--;
+		GetTree().CallGroup("ui", "SetHealth", _playerNode.Health);
+		if (_playerNode.Health <= 0)
 		{
 			GetTree().ChangeSceneToPacked(GameOverScene);
 		}
 
 	}
 
-	private void _onMeteorDestroyed()
+	private void _onMeteorDestroyed(Vector2 position, int score)
+	{
+		
+		// TODO next: Set up UI element to show up and fade out with the score of destroyed meteor.
+		_globalNode.UpdateScoreBy(score);
+		_playExplosionSound();
+	}
+
+	private void _playExplosionSound()
 	{
 		_explosionStreamPlayerNode.Play();
 	}

@@ -1,5 +1,4 @@
 using Godot;
-using System;
 
 public partial class Player : CharacterBody2D
 {
@@ -26,6 +25,9 @@ public partial class Player : CharacterBody2D
 
 	public bool CanShoot = true;
 	
+	// This could maybe be a global?
+	public int Health = 5;
+	
 
 	// Positioning and rotation
 	private float _targetSkew;
@@ -35,6 +37,7 @@ public partial class Player : CharacterBody2D
 	private Sprite2D _playerSpriteNode;
 	private Marker2D _laserStartPositionNode;
 	private AudioStreamPlayer2D _laserStreamPlayerNode;
+	private AudioStreamPlayer2D _damageStreamPlayerNode;
 	
 	private Timer _primaryWeaponTimerNode;
 
@@ -64,11 +67,17 @@ public partial class Player : CharacterBody2D
 		_move(deltaf);
 	}
 
+	public void PlayDamageSound()
+	{
+		_damageStreamPlayerNode.Play();
+	}
+
 	private void _getNodes()
 	{
 		_playerSpriteNode = GetNode<Sprite2D>("PlayerSprite");
 		_laserStartPositionNode = GetNode<Marker2D>("LaserStartPosition");
 		_laserStreamPlayerNode = GetNode<AudioStreamPlayer2D>("LaserSound");
+		_damageStreamPlayerNode = GetNode<AudioStreamPlayer2D>("DamageSound");
 		_primaryWeaponTimerNode = GetNode<Timer>("PrimaryWeaponTimer");
 	}
 	

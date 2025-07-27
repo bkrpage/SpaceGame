@@ -18,6 +18,7 @@ public partial class Ui : CanvasLayer
 	{
 		_getNodes();
 		_registerScoreTimer();
+		_registerScoreSignal();
 	}
 
 	private void _getNodes()
@@ -34,11 +35,20 @@ public partial class Ui : CanvasLayer
 		_scoreTimerNode.Start();
 		_scoreTimerNode.Timeout += _onScoreTimerTimeout;	
 	}
+	
+	private void _registerScoreSignal()
+	{
+		_globalNode.ScoreUpdate += _updateScore;	
+	}
+
+	private void _updateScore(int score)
+	{
+		_scoreLabelNode.Text = $"Score: {score}";
+	}
 
 	private void _onScoreTimerTimeout()
 	{
-		_globalNode.Score++;
-		_scoreLabelNode.Text = $"Score: {_globalNode.Score}";
+		_globalNode.IncrementScore();
 	}
 	
 
