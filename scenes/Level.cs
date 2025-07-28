@@ -6,16 +6,15 @@ public partial class Level : Node2D
 	// Exports
 	[Export] public double MeteorTimerTimout = 1.0;
 	[Export] public int StarsAmount = 35;
-	
-	[Export] public PackedScene GameOverScene = GD.Load<PackedScene>("res://scenes/game_over.tscn");
-	
+
 	// Scenes
+	private PackedScene _gameOverScene = GD.Load<PackedScene>("res://scenes/game_over.tscn");
 	private PackedScene _meteorScene = GD.Load<PackedScene>("res://scenes/meteor.tscn");
 	private PackedScene _laserScene = GD.Load<PackedScene>("res://scenes/laser.tscn");
 	private PackedScene _starScene = GD.Load<PackedScene>("res://scenes/star.tscn");
+	private PackedScene _floatingTextScene = GD.Load<PackedScene>("res://scenes/floating_text.tscn");
 	
 	// Instance variables
-	private RandomNumberGenerator _rng = new();
 	private Vector2 _screenSize;
 
 	// TODO I don't like this here, I feel like it should be in the player itself
@@ -26,8 +25,9 @@ public partial class Level : Node2D
 	private Player _playerNode;
 	private Node2D _lasersNode;
 	private Node2D _meteorsNode;
-	private Timer _meteorTimerNode;
 	private Node2D _starsNode;
+	private Node2D _floatingScoreTextNode;
+	private Timer _meteorTimerNode;
 	private AudioStreamPlayer2D _explosionStreamPlayerNode;
 
 	public override void _Ready()
@@ -35,6 +35,9 @@ public partial class Level : Node2D
 		_screenSize = GetViewport().GetVisibleRect().Size;
 
 		_getNodes();
+		
+		// TODO cleanup
+		_globalNode.GenerateNewSeed();
 
 		_registerMeteorTimer();
 		_registerShootLaser();
@@ -51,11 +54,12 @@ public partial class Level : Node2D
 	private void _getNodes()
 	{
 		_globalNode = GetNode<Global>("/root/Global");
-		_meteorsNode = GetNode<Node2D>("Meteors");
 		_playerNode = GetNode<Player>("Player");
-		_meteorTimerNode =  GetNode<Timer>("MeteorTimer");
+		_meteorsNode = GetNode<Node2D>("Meteors");
 		_lasersNode =  GetNode<Node2D>("Lasers");
 		_starsNode =  GetNode<Node2D>("Stars");
+		_floatingScoreTextNode =  GetNode<Node2D>("FloatingScoreText");
+		_meteorTimerNode =  GetNode<Timer>("MeteorTimer");
 		_explosionStreamPlayerNode = GetNode<AudioStreamPlayer2D>("ExplosionSound");
 	}
 
@@ -100,7 +104,7 @@ public partial class Level : Node2D
 		GetTree().CallGroup("ui", "SetHealth", _playerNode.Health);
 		if (_playerNode.Health <= 0)
 		{
-			GetTree().ChangeSceneToPacked(GameOverScene);
+			GetTree().ChangeSceneToPacked(_gameOverScene);
 		}
 
 	}
@@ -108,9 +112,25 @@ public partial class Level : Node2D
 	private void _onMeteorDestroyed(Vector2 position, int score)
 	{
 		
-		// TODO next: Set up UI element to show up and fade out with the score of destroyed meteor.
+		_displayScoreText(position, "+ " + score, 0.4f);
 		_globalNode.UpdateScoreBy(score);
 		_playExplosionSound();
+	}
+
+	private async void _displayScoreText(Vector2 position, string scoreText, float duration)
+	{
+		var floatingText = _floatingTextScene.Instantiate() as FloatingText;
+		if (floatingText == null) return;
+		floatingText.Position = position;
+		floatingText.SetText(scoreText);		
+		var tween = CreateTween();
+		tween.TweenProperty(floatingText, "scale", new Vector2(2.0f, 2.0f), duration / 2)
+			.From(new Vector2(1f, 1f));
+		tween.TweenProperty(floatingText, "scale", new Vector2(0f, 0f), duration);
+
+		_floatingScoreTextNode.AddChild(floatingText);
+		await ToSignal(tween, "finished");
+		floatingText.CallDeferred("queue_free");;
 	}
 
 	private void _playExplosionSound()
@@ -126,13 +146,13 @@ public partial class Level : Node2D
 			var sprite = star.GetChild<AnimatedSprite2D>(0);
 			
 			var frameCount = sprite.SpriteFrames.GetFrameCount("default");
-			sprite.SetFrame(_rng.RandiRange(0, frameCount - 1));
-			sprite.SpeedScale = _rng.RandfRange(0.5f, 1.5f);
+			sprite.SetFrame(_globalNode.Rng.RandiRange(0, frameCount - 1));
+			sprite.SpeedScale = _globalNode.Rng.RandfRange(0.5f, 1.5f);
 			
-			var starPosition = new Vector2(_rng.RandiRange(0, (int) _screenSize.X ), _rng.RandiRange(0, (int) _screenSize.Y));
+			var starPosition = new Vector2(_globalNode.Rng.RandiRange(0, (int) _screenSize.X ), _globalNode.Rng.RandiRange(0, (int) _screenSize.Y));
 			star.Position = starPosition;
 
-			var starScale = _rng.RandfRange(0.5f, 1.5f);
+			var starScale = _globalNode.Rng.RandfRange(0.5f, 1.5f);
 			star.Scale = new Vector2(starScale, starScale);
 			
 			_starsNode.AddChild(star);

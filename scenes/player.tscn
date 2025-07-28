@@ -38,7 +38,7 @@ process_material = SubResource("ParticleProcessMaterial_qhqgy")
 texture = ExtResource("2_g2els")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
-polygon = PackedVector2Array(-8, -37, 8, -37, 12, -12, 36, 2, 49, -7, 46, 25, 14, 28, 8, 38, -8, 38, -14, 27, -46, 24, -50, -7, -36, 2, -11, -12)
+polygon = PackedVector2Array(8, -37, 12, -12, 36, 2, 32, 24, 14, 28, 8, 38, -8, 38, -14, 27, -32, 24, -36, 2, -11, -12, -8, -37)
 
 [node name="LaserStartPosition" type="Marker2D" parent="."]
 position = Vector2(0, -60)

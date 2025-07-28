@@ -1,0 +1,5 @@
+[gd_resource type="Theme" format=3 uid="uid://cvcm7kf6i2gq0"]
+
+[resource]
+ScorePopup/base_type = &"Label"
+ScorePopup/colors/Color = Color(0, 0.734863, 0, 1)

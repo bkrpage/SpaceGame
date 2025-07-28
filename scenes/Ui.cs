@@ -21,6 +21,12 @@ public partial class Ui : CanvasLayer
 		_registerScoreSignal();
 	}
 
+	public override void _ExitTree()
+	{
+		_cleanupSignals();
+		base._ExitTree();
+	}
+
 	private void _getNodes()
 	{
 		_globalNode = GetNode<Global>("/root/Global");
@@ -28,12 +34,18 @@ public partial class Ui : CanvasLayer
 		_livesContainerNode =  GetNode<HBoxContainer>("LivesOuterContainer/LivesContainer");
 		_scoreLabelNode =  GetNode<Label>("MarginContainer/Label");
 	}
+
+	private void _cleanupSignals()
+	{
+		_scoreTimerNode.Timeout -= _onScoreTimerTimeout;
+		_globalNode.ScoreUpdate -= _updateScore;
+	}
 	
 	private void _registerScoreTimer()
 	{
 		_scoreTimerNode.WaitTime = ScoreTimerTimeout;
 		_scoreTimerNode.Start();
-		_scoreTimerNode.Timeout += _onScoreTimerTimeout;	
+		_scoreTimerNode.Timeout += _onScoreTimerTimeout;
 	}
 	
 	private void _registerScoreSignal()

@@ -4,81 +4,105 @@ using System;
 public partial class Meteor : Area2D
 {
 
-	[Export] public float BaseSpeed = 400f;
-	[Export] public float SpeedRandomFactor = 0.2f;
-
-	[Export] public int BaseScore = 50;
-	[Export] public float SpeedInfluence = 0.5f;
-	[Export] public float ScaleInfluence = 0.5f;
 	
+	// Display
+	[Export] public string TextureResourcePath = "res://assets/graphic/Meteors/";
+	[Export] public string TextureNameTemplate = "meteor{meteorColor}_big{meteorShape}.png";
+	[Export] public string[] TextureColors = ["Grey", "Brown"];
+	[Export] public int TextureShapeVariationAmount = 4;
 	[Export] public float BaseScale = 1f;
 	[Export] public float ScaleRandomFactor = 0.5f;
 	
+	// Movement
+	[Export] public float BaseSpeed = 400f;
+	[Export] public float SpeedRandomFactor = 0.2f;
 	[Export] public float MaxYVectorVariation = 0.5f;
-	
 	[Export] public float MaxRotationSpeedDeg = 500f;
 
-	[Export] public string TextureResourcePath = "res://assets/graphic/Meteors/";
-	[Export] public string TextureNameTemplate = "meteor{meteorColor}_big{meteorShape}.png";
+	// Score
+	[Export] public int BaseScore = 50;
+	[Export] public float SpeedScoreInfluence = 0.5f;
+	[Export] public float ScaleScoreInfluence = 0.5f;
+	
+	// Signals
+	[Signal] public delegate void CollisionEventHandler();
+	[Signal] public delegate void DestroyedEventHandler(Vector2 position, int score);
 
-	[Export] public string[] TextureColors = ["Grey", "Brown"];
-	[Export] public int TextureShapeVariationAmount = 4;
-
-	private RandomNumberGenerator _rng = new();
-
+	// Display
 	private string _meteorColor;
 	private int _meteorShape;
 	private string _textureName;
+	private float _scale;
 	
+	// Movement
 	private float _speed;
 	private float _yVariation;
 	private float _rotationSpeedDeg;
-
-	private float _scale;
-
-	private float _score;
 	
-	[Signal]
-	public delegate void CollisionEventHandler();
+	// Other
+	private float _score;
 
-	[Signal]
-	public delegate void DestroyedEventHandler(Vector2 position, int score);
+	private bool _destroyable;
+	
+	// nodes
+	private Global _globalNode;
+	private Sprite2D _spriteNode;
+
 
 	public override void _Ready()
 	{
 		_getNodes();
 		_setupSpriteAndCollisions();
-		_initialiseRandomScale();
+		_randomiseScale();
 		_initialisePosition();
-		_initialiseSpeedAndRotation();
-		_calculateScore();
+		_randomiseSpeedAndRotation();
+		_calculateScoreGiven();
 		_registerSignals();
 	}
 
 	private void _getNodes()
 	{
+		_globalNode = GetNode<Global>("/root/Global");
+		_spriteNode = GetNode<Sprite2D>("MeteorSprite");
 	}
 	
 	public override void _Process(double delta)
 	{
 		var deltaf = (float) delta;
+		_processPositionAndRotation(deltaf);
+		_determineDestroyable();
+		_despawnIfOffScreen();
+	}
+	
+	private void _determineDestroyable()
+	{
+		if (_destroyable) return;
 		
+		var viewportSize = WindowManager.ViewportSize;
+		var meteorRect = _spriteNode.GetRect();
+		var meteorGlobalPosition = GlobalPosition;
+
+		_destroyable = (meteorGlobalPosition.Y - meteorRect.Size.Y) > -meteorRect.Size.Y;
+	}
+
+	private void _processPositionAndRotation(float deltaf)
+	{
 		Position += new Vector2(_yVariation, 1f) * _speed * deltaf;
-		
 		RotationDegrees += _rotationSpeedDeg * deltaf;
-		
-		// Yeet when offscreen.
+	}
+
+	private void _despawnIfOffScreen()
+	{
 		if (Position.Y > WindowManager.ViewportSize.Y + 200f)
 		{
-			QueueFree();
+			CallDeferred("queue_free");
 		}
-		
 	}
 	
 	private void _setupSpriteAndCollisions()
 	{
-		_meteorColor = TextureColors[_rng.RandiRange(0, TextureColors.Length - 1)];
-		_meteorShape = _rng.RandiRange(1, TextureShapeVariationAmount);
+		_meteorColor = TextureColors[_globalNode.Rng.RandiRange(0, TextureColors.Length - 1)];
+		_meteorShape = _globalNode.Rng.RandiRange(1, TextureShapeVariationAmount);
 		
 		_textureName = TextureNameTemplate
 			.Replace("{meteorColor}", _meteorColor)
@@ -98,37 +122,37 @@ public partial class Meteor : Area2D
 
 	private void _initialisePosition()
 	{
-		var initialPositionX = _rng.RandiRange(0, (int) WindowManager.ViewportSize.X);
-		var initialPositionY = _rng.RandiRange(-150, -50);
+		var initialPositionX = _globalNode.Rng.RandiRange(0, (int) WindowManager.ViewportSize.X);
+		var initialPositionY = _globalNode.Rng.RandiRange(-150, -50);
 		Position = new Vector2(initialPositionX, initialPositionY);
 	}
 	
-	private void _initialiseSpeedAndRotation()
+	private void _randomiseSpeedAndRotation()
 	{
-		var speedVariation = 1.0f + _rng.RandfRange(-SpeedRandomFactor, SpeedRandomFactor);
+		var speedVariation = 1.0f + _globalNode.Rng.RandfRange(-SpeedRandomFactor, SpeedRandomFactor);
 		_speed = BaseSpeed * speedVariation;
-		_yVariation = _rng.RandfRange(-MaxYVectorVariation, MaxYVectorVariation);
+		_yVariation = _globalNode.Rng.RandfRange(-MaxYVectorVariation, MaxYVectorVariation);
 		
-		_rotationSpeedDeg = _rng.RandfRange(-MaxRotationSpeedDeg, MaxRotationSpeedDeg);
+		_rotationSpeedDeg = _globalNode.Rng.RandfRange(-MaxRotationSpeedDeg, MaxRotationSpeedDeg);
 	}
 
-	private void _initialiseRandomScale()
+	private void _randomiseScale()
 	{
-		var scaleVariation = 1.0f + _rng.RandfRange(-ScaleRandomFactor, ScaleRandomFactor);
+		var scaleVariation = 1.0f + _globalNode.Rng.RandfRange(-ScaleRandomFactor, ScaleRandomFactor);
 		_scale = BaseScale *  scaleVariation;
 
 		Scale *= _scale;
 	}
 
-	private void _calculateScore()
+	private void _calculateScoreGiven()
 	{
 
 		// Normalize to base (e.g. 1.0 speed & scale should give multiplier of 1)
 		var speedFactor = _speed / BaseSpeed;
 		var scaleFactor = BaseScale / _scale; // smaller scale = higher factor
 
-		var speedMultiplier = 1.0f + ((speedFactor - 1.0f) * SpeedInfluence);
-		var scaleMultiplier = 1.0f + ((scaleFactor - 1.0f) * ScaleInfluence);
+		var speedMultiplier = 1.0f + ((speedFactor - 1.0f) * SpeedScoreInfluence);
+		var scaleMultiplier = 1.0f + ((scaleFactor - 1.0f) * ScaleScoreInfluence);
 
 		_score = Mathf.RoundToInt(BaseScore * speedMultiplier * scaleMultiplier);
 	}
@@ -149,14 +173,20 @@ public partial class Meteor : Area2D
 	// Laser is an Area, so this is called.
 	private void _OnAreaEntered(Node2D body)
 	{
-		EmitSignal(SignalName.Destroyed, Position, _score);
-		// Could instead play the sound from here, hide node and collision, and then await for x seconds for soudn to play.
-		// this means the sound will be positionally correct for where it was destroyed.
-		GD.Print(_score);
-		
+		// TODO - Multiple hit meteors. Or could be 'health' based and health removal is determined by the
+		// impact velocity.
+		_destroyIfDestroyable();
 		// Get rid of laser that destroyed it
 		body.QueueFree();
-		// and yeet self.
-		QueueFree();
+	}
+
+	private void _destroyIfDestroyable()
+	{
+		if (!_destroyable) return;
+		EmitSignal(SignalName.Destroyed, Position, _score);
+		// Could instead play the sound from here, hide node and collision, and then await for x seconds for
+		// sound to play. This means the sound will be positionally correct for where it was destroyed.
+		
+		CallDeferred("queue_free");
 	}
 }

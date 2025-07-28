@@ -80,6 +80,11 @@ public partial class Player : CharacterBody2D
 		_damageStreamPlayerNode = GetNode<AudioStreamPlayer2D>("DamageSound");
 		_primaryWeaponTimerNode = GetNode<Timer>("PrimaryWeaponTimer");
 	}
+
+	private void _setInitialPosition()
+	{
+		Position = new Vector2(WindowManager.ViewportSize.X / 2, WindowManager.ViewportSize.Y - 250f);;
+	}
 	
 	private void _registerPrimaryWeaponTimer()
 	{

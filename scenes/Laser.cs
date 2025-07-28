@@ -34,7 +34,7 @@ public partial class Laser : Area2D
 		// Yeet when offscreen.
 		if (Position.Y < -200f)
 		{
-			QueueFree();
+			CallDeferred("queue_free");;
 		}
 		
 	}

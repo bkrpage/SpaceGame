@@ -63,13 +63,15 @@ shape = SubResource("RectangleShape2D_mx8sn")
 
 [node name="MeteorTimer" type="Timer" parent="."]
 
-[node name="Meteors" type="Node2D" parent="."]
-metadata/_edit_lock_ = true
-
 [node name="Lasers" type="Node2D" parent="."]
 metadata/_edit_lock_ = true
 
+[node name="Meteors" type="Node2D" parent="."]
+metadata/_edit_lock_ = true
+
 [node name="UI" parent="." instance=ExtResource("4_mx8sn")]
+
+[node name="FloatingScoreText" type="Node2D" parent="."]
 
 [node name="ExplosionSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("5_ppgk2")
