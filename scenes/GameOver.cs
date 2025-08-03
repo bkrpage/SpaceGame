@@ -6,7 +6,7 @@ public partial class GameOver : CanvasLayer
 
 	[Export] public PackedScene LevelScene = GD.Load<PackedScene>("res://scenes/level.tscn");
 
-	private Global _globalNode;
+	private GameState _gameStateNode;
 	private Label _scoreNode;
 	
 	private AudioStreamPlayer2D _deathSoundStreamPlayerNode;
@@ -16,7 +16,7 @@ public partial class GameOver : CanvasLayer
 		_getNodes();
 		_playDeathSound();
 		
-		_scoreNode.Text += $" {_globalNode.Score}";
+		_scoreNode.Text += $" {_gameStateNode.Score}";
 	}
 	public override void _Process(double delta)
 	{
@@ -25,7 +25,7 @@ public partial class GameOver : CanvasLayer
 	
 	private void _getNodes()
 	{
-		_globalNode = GetNode<Global>("/root/Global");
+		_gameStateNode = GetNode<GameState>("/root/GameState");
 		_scoreNode =  GetNode<Label>("LargeContainer/GameOverScoreContainer/Score");
 		_deathSoundStreamPlayerNode = GetNode<AudioStreamPlayer2D>("DeathSound");
 	}

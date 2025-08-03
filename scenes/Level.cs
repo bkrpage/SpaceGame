@@ -6,6 +6,7 @@ public partial class Level : Node2D
 	// Exports
 	[Export] public double MeteorTimerTimout = 1.0;
 	[Export] public int StarsAmount = 35;
+	[Export] public double ScoreTimerTimeout = 0.5;
 
 	// Scenes
 	private PackedScene _gameOverScene = GD.Load<PackedScene>("res://scenes/game_over.tscn");
@@ -21,7 +22,7 @@ public partial class Level : Node2D
 	private int _playerHealth = 5;
 	
 	// Nodes
-	private Global _globalNode;
+	private GameState _gameStateNode;
 	private Player _playerNode;
 	private Node2D _lasersNode;
 	private Node2D _meteorsNode;
@@ -29,6 +30,7 @@ public partial class Level : Node2D
 	private Node2D _floatingScoreTextNode;
 	private Timer _meteorTimerNode;
 	private AudioStreamPlayer2D _explosionStreamPlayerNode;
+	private Timer _scoreTimerNode;
 
 	public override void _Ready()
 	{
@@ -37,7 +39,9 @@ public partial class Level : Node2D
 		_getNodes();
 		
 		// TODO cleanup
-		_globalNode.GenerateNewSeed();
+		GameState.GenerateNewSeed();
+		
+		_registerScoreTimer();
 
 		_registerMeteorTimer();
 		_registerShootLaser();
@@ -47,13 +51,19 @@ public partial class Level : Node2D
 		_setScoreToZero();
 	}
 
+	public override void _ExitTree()
+	{
+		_scoreTimerNode.Timeout -= _onScoreTimerTimeout;
+		base._ExitTree();
+	}
+
 
 	/// <summary>
 	/// Get the nodes used within the level and assign to the instance variables.
 	/// </summary>
 	private void _getNodes()
 	{
-		_globalNode = GetNode<Global>("/root/Global");
+		_gameStateNode = GetNode<GameState>("/root/GameState");
 		_playerNode = GetNode<Player>("Player");
 		_meteorsNode = GetNode<Node2D>("Meteors");
 		_lasersNode =  GetNode<Node2D>("Lasers");
@@ -61,7 +71,16 @@ public partial class Level : Node2D
 		_floatingScoreTextNode =  GetNode<Node2D>("FloatingScoreText");
 		_meteorTimerNode =  GetNode<Timer>("MeteorTimer");
 		_explosionStreamPlayerNode = GetNode<AudioStreamPlayer2D>("ExplosionSound");
+		_scoreTimerNode =  GetNode<Timer>("ScoreTimer");
 	}
+	
+	private void _registerScoreTimer()
+	{
+		_scoreTimerNode.WaitTime = ScoreTimerTimeout;
+		_scoreTimerNode.Start();
+		_scoreTimerNode.Timeout += _onScoreTimerTimeout;
+	}
+
 
 	private void _registerShootLaser()
 	{
@@ -96,6 +115,12 @@ public partial class Level : Node2D
 		meteor.Connect("Collision", new Callable(this, nameof(_onMeteorCollision)));
 		meteor.Connect("Destroyed", new Callable(this, nameof(_onMeteorDestroyed)));
 	}
+	
+
+	private void _onScoreTimerTimeout()
+	{
+		_gameStateNode.IncrementScore();
+	}
 
 	private void _onMeteorCollision()
 	{
@@ -113,7 +138,7 @@ public partial class Level : Node2D
 	{
 		
 		_displayScoreText(position, "+ " + score, 0.4f);
-		_globalNode.UpdateScoreBy(score);
+		_gameStateNode.UpdateScoreBy(score);
 		_playExplosionSound();
 	}
 
@@ -146,13 +171,13 @@ public partial class Level : Node2D
 			var sprite = star.GetChild<AnimatedSprite2D>(0);
 			
 			var frameCount = sprite.SpriteFrames.GetFrameCount("default");
-			sprite.SetFrame(_globalNode.Rng.RandiRange(0, frameCount - 1));
-			sprite.SpeedScale = _globalNode.Rng.RandfRange(0.5f, 1.5f);
+			sprite.SetFrame(GameState.Rng.RandiRange(0, frameCount - 1));
+			sprite.SpeedScale = GameState.Rng.RandfRange(0.5f, 1.5f);
 			
-			var starPosition = new Vector2(_globalNode.Rng.RandiRange(0, (int) _screenSize.X ), _globalNode.Rng.RandiRange(0, (int) _screenSize.Y));
+			var starPosition = new Vector2(GameState.Rng.RandiRange(0, (int) _screenSize.X ), GameState.Rng.RandiRange(0, (int) _screenSize.Y));
 			star.Position = starPosition;
 
-			var starScale = _globalNode.Rng.RandfRange(0.5f, 1.5f);
+			var starScale = GameState.Rng.RandfRange(0.5f, 1.5f);
 			star.Scale = new Vector2(starScale, starScale);
 			
 			_starsNode.AddChild(star);
@@ -166,7 +191,7 @@ public partial class Level : Node2D
 	
 	private void _setScoreToZero()
 	{
-		_globalNode.Score = 0;
+		_gameStateNode.Score = 0;
 	}
 	
 }

@@ -78,10 +78,7 @@ stream = ExtResource("5_ppgk2")
 
 [node name="GameMusic" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("7_klq6b")
-volume_db = -16.033
+volume_db = -26.663
 autoplay = true
 
-[node name="GameMusic2" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("7_klq6b")
-volume_db = -20.173
-autoplay = true
+[node name="ScoreTimer" type="Timer" parent="."]

@@ -34,5 +34,3 @@ theme_override_constants/margin_left = 10
 [node name="LivesContainer" type="HBoxContainer" parent="LivesOuterContainer"]
 layout_mode = 2
 theme_override_constants/separation = 6
-
-[node name="ScoreTimer" type="Timer" parent="."]

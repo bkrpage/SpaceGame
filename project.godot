@@ -16,7 +16,7 @@ config/features=PackedStringArray("4.4", "C#", "Mobile")
 
 [autoload]
 
-Global="*res://global/Global.cs"
+GameState="*res://global/GameState.cs"
 WindowManager="*res://global/WindowManager.cs"
 
 [display]

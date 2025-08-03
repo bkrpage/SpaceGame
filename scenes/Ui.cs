@@ -6,18 +6,15 @@ public partial class Ui : CanvasLayer
 
 	[Export] public Texture2D LifeTexture = GD.Load<Texture2D>("res://assets/graphic/UI/playerLife1_orange.png");
 
-	[Export] public double ScoreTimerTimeout = 0.5;
 	
-	private Global _globalNode;
+	private GameState _gameStateNode;
 	private HBoxContainer _livesContainerNode;
-	private Timer _scoreTimerNode;
 	private Label _scoreLabelNode;
 	
 	
 	public override void _Ready()
 	{
 		_getNodes();
-		_registerScoreTimer();
 		_registerScoreSignal();
 	}
 
@@ -29,38 +26,24 @@ public partial class Ui : CanvasLayer
 
 	private void _getNodes()
 	{
-		_globalNode = GetNode<Global>("/root/Global");
-		_scoreTimerNode =  GetNode<Timer>("ScoreTimer");
+		_gameStateNode = GetNode<GameState>("/root/GameState");
 		_livesContainerNode =  GetNode<HBoxContainer>("LivesOuterContainer/LivesContainer");
 		_scoreLabelNode =  GetNode<Label>("MarginContainer/Label");
 	}
 
 	private void _cleanupSignals()
 	{
-		_scoreTimerNode.Timeout -= _onScoreTimerTimeout;
-		_globalNode.ScoreUpdate -= _updateScore;
-	}
-	
-	private void _registerScoreTimer()
-	{
-		_scoreTimerNode.WaitTime = ScoreTimerTimeout;
-		_scoreTimerNode.Start();
-		_scoreTimerNode.Timeout += _onScoreTimerTimeout;
+		_gameStateNode.ScoreUpdate -= _updateScore;
 	}
 	
 	private void _registerScoreSignal()
 	{
-		_globalNode.ScoreUpdate += _updateScore;	
+		_gameStateNode.ScoreUpdate += _updateScore;	
 	}
 
 	private void _updateScore(int score)
 	{
 		_scoreLabelNode.Text = $"Score: {score}";
-	}
-
-	private void _onScoreTimerTimeout()
-	{
-		_globalNode.IncrementScore();
 	}
 	
 

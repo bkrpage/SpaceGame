@@ -1,13 +1,13 @@
 using Godot;
 using System;
 
-public partial class Global : Node
+public partial class GameState : Node
 {
     public int Score = 0;
 
-    public string Seed;
-    public RandomNumberGenerator Rng;
-    
+    public static string Seed { get; private set; }
+    public static RandomNumberGenerator Rng { get; private set; }
+
     [Signal] public delegate void ScoreUpdateEventHandler(int score);
 
     public override void _Ready()
@@ -15,7 +15,8 @@ public partial class Global : Node
         GenerateNewSeed();
     }
 
-    public void UpdateScoreBy(int amount)
+    public void UpdateScoreBy(int amount) 
+    
     {
         Score += amount;
         EmitSignalScoreUpdate(Score);
@@ -32,7 +33,7 @@ public partial class Global : Node
         EmitSignalScoreUpdate(Score);
     }
 
-    public void GenerateNewSeed()
+    public static void GenerateNewSeed()
     {
         Seed = Guid.NewGuid().ToString();
         Rng = new RandomNumberGenerator();

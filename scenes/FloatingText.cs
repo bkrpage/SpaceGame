@@ -8,7 +8,7 @@ public partial class FloatingText : Marker2D
 
 	
 	// Nodes
-	private Global _globalNode;
+	private GameState _gameStateNode;
 
 	public override void _Ready()
 	{
@@ -18,12 +18,12 @@ public partial class FloatingText : Marker2D
 
 	private void _randomiseRotation()
 	{
-		RotationDegrees = _globalNode.Rng.RandfRange(-MaxRotation, MaxRotation);
+		RotationDegrees = GameState.Rng.RandfRange(-MaxRotation, MaxRotation);
 	}
 
 	private void _getNodes()
 	{
-		_globalNode = GetNode<Global>("/root/Global");
+		_gameStateNode = GetNode<GameState>("/root/GameState");
 	}
 
 	public void SetText(string text)
