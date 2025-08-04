@@ -10,6 +10,7 @@ public partial class Laser : Area2D
 	
 	public Vector2 ShooterVelocity =  new(0,0);
 	
+	// Open to calculating damage based on other factors in future. For now just flat value.
 	public int CalculatedDamage => BaseDamage;
 
 	private Sprite2D _laserSprite;

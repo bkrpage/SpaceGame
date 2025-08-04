@@ -29,9 +29,11 @@ collision_mask = 6
 script = ExtResource("1_g2els")
 MaxSpeed = 500.0
 
-[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+[node name="ExhaustParticles" type="GPUParticles2D" parent="."]
 position = Vector2(0, 45)
 amount = 20
+speed_scale = 2.97
+randomness = 0.44
 process_material = SubResource("ParticleProcessMaterial_qhqgy")
 
 [node name="PlayerSprite" type="Sprite2D" parent="."]
