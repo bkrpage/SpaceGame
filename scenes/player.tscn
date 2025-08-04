@@ -24,7 +24,7 @@ turbulence_noise_speed_random = 4.0
 turbulence_initial_displacement_min = 1.49012e-06
 turbulence_initial_displacement_max = 1.49012e-06
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" groups=["ui"]]
 collision_mask = 6
 script = ExtResource("1_g2els")
 MaxSpeed = 500.0
