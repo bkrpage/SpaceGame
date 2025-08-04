@@ -9,6 +9,14 @@ public partial class Player : CharacterBody2D
 	[Export] public float AccelerationFactor = 500f;
 	[Export] public float DecelerationFactor = 200f;
 	
+	// Boost
+	[Export] public float DashFactor = 2.5f;
+	[Export] public Timer DashDurationTimer = new();
+	[Export] public float DashDuration = 0.5f;
+	[Export] public Timer DashCooldownTimer = new();
+	[Export] public float DashCooldown = 1.5f;
+	public bool CanDash = true;
+	public bool IsDashing = false;
 	
 	[Export] public float MaxSkew = 0.1f;
 	[Export] public float SkewSpeed = 3f;
@@ -50,6 +58,8 @@ public partial class Player : CharacterBody2D
 		_getNodes();
 		
 		_registerPrimaryWeaponTimer();
+
+		_initialiseDashTimers();
 		
 		_playerSpriteNode.Texture = PlayerTexture;
 	}
@@ -86,9 +96,33 @@ public partial class Player : CharacterBody2D
 		Position = new Vector2(WindowManager.ViewportSize.X / 2, WindowManager.ViewportSize.Y - 250f);;
 	}
 	
+	private void _initialiseDashTimers()
+	{
+		
+		DashDurationTimer.OneShot = true;
+		DashDurationTimer.WaitTime = DashDuration;
+		DashDurationTimer.Timeout += _onDashDurationTimerTimeout;
+		AddChild(DashDurationTimer);
+		
+		DashCooldownTimer.OneShot = true;
+		DashCooldownTimer.WaitTime = DashCooldown;
+		DashCooldownTimer.Timeout += _onDashCooldownTimerTimeout;
+		AddChild(DashCooldownTimer);
+	}
+	
 	private void _registerPrimaryWeaponTimer()
 	{
 		_primaryWeaponTimerNode.Timeout += _onPrimaryWeaponTimerTimeout;	
+	}
+
+	private void _onDashDurationTimerTimeout()
+	{
+		IsDashing = false;
+	}
+
+	private void _onDashCooldownTimerTimeout()
+	{
+		CanDash = true;
 	}
 
 	private void _onPrimaryWeaponTimerTimeout()
@@ -108,41 +142,75 @@ public partial class Player : CharacterBody2D
 			_primaryWeaponTimerNode.Start();
 			_laserStreamPlayerNode.Play();
 		}
+		
+		_handleDashInput();
+	}
+
+	private void _handleDashInput()
+	{
+		// While dash is pressed, enable dash, keeping active while held down. If let go, stop dash.
+		// Don't allow dashing before timer is finished. 
+
+		if (Input.IsActionJustPressed("dash") && CanDash && DashDurationTimer.IsStopped())
+		{
+			CanDash = false;
+			DashCooldownTimer.Start();
+			IsDashing = true;
+			DashDurationTimer.Start();
+		}
+
+		if (Input.IsActionJustReleased("dash") && IsDashing)
+		{
+			IsDashing = false;
+		}
+		
+		// Some sound here would be nice.
+
+		if (!OS.HasFeature("debug")) return;
+		// Anything required for debugging goes after this.
+		GetTree().CallGroup("ui", "SetCanDash", CanDash);
+		GetTree().CallGroup("ui", "SetIsDash", IsDashing);
+
+
 	}
 
 	private void _move(float deltaf)
 	{
+		var speed = IsDashing ? MaxSpeed * DashFactor : MaxSpeed;
+		var accel = IsDashing ? AccelerationFactor * DashFactor : AccelerationFactor;
+		
 		Velocity = 
 			_direction != Vector2.Zero ? 
-				Velocity.MoveToward(_direction * MaxSpeed, AccelerationFactor * deltaf) :
+				Velocity.MoveToward(_direction * speed, accel * deltaf) :
 				Velocity.MoveToward(Vector2.Zero, DecelerationFactor * Friction * deltaf);
 		
-		
-		// Position += _velocity * deltaf;
 		MoveAndSlide();
+		
+		if (!OS.HasFeature("debug")) return;
+		GetTree().CallGroup("ui", "SetSpeed", Velocity.Length());
 	}
 
 	private void _calculateRotationAndSkew(float deltaf)
 	{
-		// going right
-		if (_direction.X < 0)
+		switch (_direction.X)
 		{
-			Rotation -= RotationSpeed * deltaf;
-			_targetSkew = -MaxSkew;
+			// going right
+			case < 0:
+				Rotation -= RotationSpeed * deltaf;
+				_targetSkew = -MaxSkew;
+				break;
+			// going left
+			case > 0:
+				Rotation += RotationSpeed * deltaf;
+				_targetSkew = MaxSkew;
+				break;
+			default:
+				_targetSkew = 0f;
+				// Smoothly rotate back to neutral when not pressing left/right
+				Rotation = Mathf.MoveToward(Rotation, 0f, RotationSpeed * deltaf);
+				break;
 		}
-		// going left
-		else if (_direction.X > 0)
-		{
-			Rotation += RotationSpeed * deltaf;
-			_targetSkew = MaxSkew;
-		}    
-		else
-		{
-			_targetSkew = 0f;
-			// Smoothly rotate back to neutral when not pressing left/right
-			Rotation = Mathf.MoveToward(Rotation, 0f, RotationSpeed * deltaf);
-		}
-		
+
 		// Clamp the rotation so it doesn't exceed the max in either direction
 		Rotation = Mathf.Clamp(Rotation, -MaxRotation, MaxRotation);
 	}

@@ -11,6 +11,10 @@ public partial class Ui : CanvasLayer
 	private HBoxContainer _livesContainerNode;
 	private Label _scoreLabelNode;
 	
+	private Label _speedLabelNode;
+	private Label _canDashLabelNode;
+	private Label _isDashLabelNode;
+	
 	
 	public override void _Ready()
 	{
@@ -28,7 +32,11 @@ public partial class Ui : CanvasLayer
 	{
 		_gameStateNode = GetNode<GameState>("/root/GameState");
 		_livesContainerNode =  GetNode<HBoxContainer>("LivesOuterContainer/LivesContainer");
-		_scoreLabelNode =  GetNode<Label>("MarginContainer/Label");
+		_scoreLabelNode =  GetNode<Label>("TopBar/Score");
+		// Debug Labels
+		_speedLabelNode =  GetNode<Label>("Debug/VBox/Speed");
+		_canDashLabelNode =  GetNode<Label>("Debug/VBox/CanDash");
+		_isDashLabelNode =  GetNode<Label>("Debug/VBox/IsDash");
 	}
 
 	private void _cleanupSignals()
@@ -44,6 +52,22 @@ public partial class Ui : CanvasLayer
 	private void _updateScore(int score)
 	{
 		_scoreLabelNode.Text = $"Score: {score}";
+	}
+
+	
+	private void SetSpeed(float speed)
+	{
+		_speedLabelNode.Text = $"Speed: {speed:0.00}";
+	}
+	
+	private void SetCanDash(bool canBoost)
+	{
+		_canDashLabelNode.Text = $"Can Dash: {canBoost}";
+	}
+
+	private void SetIsDash(bool isBoost)
+	{
+		_isDashLabelNode.Text = $"Is Dashing: {isBoost}";
 	}
 	
 

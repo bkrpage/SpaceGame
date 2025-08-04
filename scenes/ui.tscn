@@ -6,18 +6,18 @@
 [node name="UI" type="CanvasLayer" groups=["ui"]]
 script = ExtResource("1_yev5y")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="TopBar" type="MarginContainer" parent="."]
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -41.5
-offset_right = 41.5
-offset_bottom = 42.0
+offset_left = -65.0
+offset_right = 65.0
+offset_bottom = 44.0
 grow_horizontal = 2
 theme = ExtResource("2_x4jx1")
 theme_override_constants/margin_top = 12
 
-[node name="Label" type="Label" parent="MarginContainer"]
+[node name="Score" type="Label" parent="TopBar"]
 layout_mode = 2
 text = "Score: 0"
 horizontal_alignment = 1
@@ -34,3 +34,31 @@ theme_override_constants/margin_left = 10
 [node name="LivesContainer" type="HBoxContainer" parent="LivesOuterContainer"]
 layout_mode = 2
 theme_override_constants/separation = 6
+
+[node name="Debug" type="MarginContainer" parent="."]
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 130.0
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Debug"]
+layout_mode = 2
+
+[node name="Speed" type="Label" parent="Debug/VBox"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+text = "Speed"
+horizontal_alignment = 1
+
+[node name="CanDash" type="Label" parent="Debug/VBox" groups=["ui"]]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Can Boost"
+horizontal_alignment = 1
+
+[node name="IsDash" type="Label" parent="Debug/VBox" groups=["ui"]]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Is Boosting"
+horizontal_alignment = 1
