@@ -36,6 +36,9 @@ public partial class Player : CharacterBody2D
 	// This could maybe be a global?
 	public int Health = 5;
 	
+	
+	private float _currentSpeed;
+	private float _currentAccel;
 
 	// Positioning and rotation
 	private float _targetSkew;
@@ -60,6 +63,7 @@ public partial class Player : CharacterBody2D
 		_registerPrimaryWeaponTimer();
 
 		_initialiseDashTimers();
+		_updateSpeedValues();
 		
 		_playerSpriteNode.Texture = PlayerTexture;
 	}
@@ -75,6 +79,8 @@ public partial class Player : CharacterBody2D
 		_squash();
 		
 		_move(deltaf);
+
+		_updateDebugUi();
 	}
 
 	public void PlayDamageSound()
@@ -150,44 +156,47 @@ public partial class Player : CharacterBody2D
 	{
 		// While dash is pressed, enable dash, keeping active while held down. If let go, stop dash.
 		// Don't allow dashing before timer is finished. 
-
 		if (Input.IsActionJustPressed("dash") && CanDash && DashDurationTimer.IsStopped())
 		{
 			CanDash = false;
 			DashCooldownTimer.Start();
 			IsDashing = true;
 			DashDurationTimer.Start();
+			_updateSpeedValues();
 		}
 
 		if (Input.IsActionJustReleased("dash") && IsDashing)
 		{
 			IsDashing = false;
+			_updateSpeedValues();
 		}
 		
-		// Some sound here would be nice.
-
-		if (!OS.HasFeature("debug")) return;
-		// Anything required for debugging goes after this.
-		GetTree().CallGroup("ui", "SetCanDash", CanDash);
-		GetTree().CallGroup("ui", "SetIsDash", IsDashing);
-
+		
+		// Add swoosh sound here.
 
 	}
 
 	private void _move(float deltaf)
 	{
-		var speed = IsDashing ? MaxSpeed * DashFactor : MaxSpeed;
-		var accel = IsDashing ? AccelerationFactor * DashFactor : AccelerationFactor;
 		
 		Velocity = 
 			_direction != Vector2.Zero ? 
-				Velocity.MoveToward(_direction * speed, accel * deltaf) :
+				Velocity.MoveToward(_direction * _currentSpeed, _currentAccel * deltaf) :
 				Velocity.MoveToward(Vector2.Zero, DecelerationFactor * Friction * deltaf);
 		
 		MoveAndSlide();
-		
+	}
+
+	private void _updateSpeedValues()
+	{
+		_currentSpeed = IsDashing ? MaxSpeed * DashFactor : MaxSpeed;
+		_currentAccel = IsDashing ? AccelerationFactor * DashFactor : AccelerationFactor;
+	}
+
+	private void _updateDebugUi()
+	{
 		if (!OS.HasFeature("debug")) return;
-		GetTree().CallGroup("ui", "SetSpeed", Velocity.Length());
+		GetTree().CallGroup("ui", "SetPlayerDebugInfo", CanDash, IsDashing, Velocity.Length());;
 	}
 
 	private void _calculateRotationAndSkew(float deltaf)

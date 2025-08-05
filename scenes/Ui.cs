@@ -33,7 +33,7 @@ public partial class Ui : CanvasLayer
 		_gameStateNode = GetNode<GameState>("/root/GameState");
 		_livesContainerNode =  GetNode<HBoxContainer>("LivesOuterContainer/LivesContainer");
 		_scoreLabelNode =  GetNode<Label>("TopBar/Score");
-		// Debug Labels
+		
 		_speedLabelNode =  GetNode<Label>("Debug/VBox/Speed");
 		_canDashLabelNode =  GetNode<Label>("Debug/VBox/CanDash");
 		_isDashLabelNode =  GetNode<Label>("Debug/VBox/IsDash");
@@ -53,24 +53,14 @@ public partial class Ui : CanvasLayer
 	{
 		_scoreLabelNode.Text = $"Score: {score}";
 	}
-
 	
-	private void SetSpeed(float speed)
+	private void SetPlayerDebugInfo(bool canDash, bool isDashing, float speed)
 	{
 		_speedLabelNode.Text = $"Speed: {speed:0.00}";
+		_canDashLabelNode.Text = $"Can Dash: {canDash}";
+		_isDashLabelNode.Text = $"Is Dashing: {isDashing}";
 	}
 	
-	private void SetCanDash(bool canBoost)
-	{
-		_canDashLabelNode.Text = $"Can Dash: {canBoost}";
-	}
-
-	private void SetIsDash(bool isBoost)
-	{
-		_isDashLabelNode.Text = $"Is Dashing: {isBoost}";
-	}
-	
-
 	private void SetHealth(int amount){
 		foreach (var life in _livesContainerNode.GetChildren())
 		{
@@ -85,5 +75,12 @@ public partial class Ui : CanvasLayer
 			_livesContainerNode.AddChild(life);
 			
 		}
+	}
+
+	public struct DebugState
+	{
+		public bool CanDash;
+		public bool IsDashing;
+		public float Speed;
 	}
 }
