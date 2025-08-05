@@ -124,6 +124,7 @@ public partial class Player : CharacterBody2D
 	private void _onDashDurationTimerTimeout()
 	{
 		IsDashing = false;
+		_updateSpeedValues();
 	}
 
 	private void _onDashCooldownTimerTimeout()
